@@ -20,3 +20,14 @@ export const settings = {
 
 };
 
+export const validationMessages: { [key: string]: string }= {
+  payment: 'Необходимо выбрать способ оплаты',
+  address: 'Необходимо указать адрес',
+  phone: 'Необходимо указать телефон',
+  email: 'Необходимо указать email'
+}
+
+export const API_ENDPOINTS = {
+  PRODUCTS: '/product/',
+  ORDER: '/order/'
+}
