@@ -5,11 +5,18 @@ import {Customer} from "./components/models/Customer.ts";
 import {ApiClient} from "./components/ApiClient.ts";
 import {Api} from "./components/base/Api.ts";
 import {API_URL} from "./utils/constants.ts";
+import {IOrder, IProduct} from "./types";
 
 const api = new Api(API_URL);
 const client = new ApiClient(api);
-const apiProducts = await client.getProducts();
-const data = apiProducts.items;
+let data: IProduct[];
+try {
+    const apiProducts = await client.getProducts();
+    data = apiProducts.items;
+} catch (err) {
+    data = [];
+    console.log(err)
+}
 
 console.group('КАТАЛОГ ТОВАРОВ');
 const productsModel = new ProductCatalog(data);
@@ -32,7 +39,7 @@ console.log('Выбранный продукт', productsModel.selectedProduct);
 productsModel.selectedProduct = undefined
 console.log('Снять выбор с продукта', productsModel.selectedProduct);
 
-console.log('Получить товар по id', productsModel.getProduct(data[0].id));
+console.log('Получить товар по id', productsModel.getProduct(data[0]?.id));
 console.log('Получить товар по несуществующему id', productsModel.getProduct('test'));
 console.groupEnd();
 
@@ -41,14 +48,24 @@ console.group('КОРЗИНА')
 const cart = new ShoppingCart();
 console.group('Добавление товара из каталога с ценой')
 console.log('Продукты в корзине до', [...cart.products]);
-cart.addProduct(data[0]);
-cart.addProduct(data[1]);
+try {
+    cart.addProduct(data[0]);
+    cart.addProduct(data[1]);
+}
+catch (err) {
+    console.log(err);
+}
 console.log('Продукты в корзине после добавления 2 позиций', cart.products);
 console.groupEnd();
 
 console.group('Добавление продукта, которого нет в данных (проверка на undefined)');
 const cart1 = new ShoppingCart();
-cart1.addProduct(data[1]);
+try {
+    cart1.addProduct(data[1]);
+} catch (err) {
+    console.log(err);
+}
+
 console.log('Продукты в корзине', [...cart1.products]);
 try {
     cart1.addProduct(data[10]);
@@ -72,14 +89,23 @@ console.groupEnd();
 console.group('Повторное добавление товара в корзину (товар можно добавить только раз)');
 const cart3 = new ShoppingCart();
 console.log('Продукты в корзине', [...cart3.products]);
-cart3.addProduct(data[0]);
-cart3.addProduct(data[0]);
+try {
+    cart3.addProduct(data[0]);
+    cart3.addProduct(data[0]);
+} catch (err) {
+    console.log(err);
+}
+
 console.log('Продукты в корзине после добавления дубля товара', cart3.products);
 console.groupEnd();
 
 console.group('Удаление товара');
 const cart4 = new ShoppingCart();
-cart4.addProduct(data[0]);
+try {
+    cart4.addProduct(data[0]);
+} catch (err) {
+    console.log(err);
+}
 console.log('Продукты в корзине до удаления', [...cart4.products]);
 cart4.removeProduct(data[0]);
 console.log('Продукты в корзине после удаления', cart4.products);
@@ -87,7 +113,11 @@ console.groupEnd();
 
 console.group('Удаление товара, которого нет в корзине');
 const cart5 = new ShoppingCart();
-cart5.addProduct(data[1]);
+try {
+    cart5.addProduct(data[1]);
+} catch (err) {
+    console.log(err);
+}
 console.log('Продуктов в корзине до удаления', cart5.products.length);
 cart.removeProduct(data[0]);
 console.log('Продукты в корзине после удаления', cart5.products.length);
@@ -95,7 +125,11 @@ console.groupEnd();
 
 console.group('Удаление продукта которого нет в данных (проверка на undefined)');
 const cart6 = new ShoppingCart();
-cart6.addProduct(data[1]);
+try {
+    cart6.addProduct(data[1]);
+} catch (err) {
+    console.log(err);
+}
 console.log('Продукты в корзине до удаления', cart6.products.length);
 cart6.removeProduct(data[10]);
 console.log('Продукты в корзине после удаления', cart6.products.length);
@@ -103,8 +137,12 @@ console.groupEnd();
 
 console.group('Очистка корзины')
 const cart7 = new ShoppingCart();
-cart7.addProduct(data[0]);
-cart7.addProduct(data[1]);
+try {
+    cart7.addProduct(data[0]);
+    cart7.addProduct(data[1]);
+} catch (err) {
+    console.log(err);
+}
 console.log('Продуктов в корзине до очистки', cart7.products.length);
 cart7.clear();
 console.log('Продуктов в корзине после полной очистки', cart7.products.length);
@@ -112,17 +150,25 @@ console.groupEnd();
 
 console.group('Получение общей стоимости');
 const cart8 = new ShoppingCart();
-cart8.addProduct(data[0]);
-cart8.addProduct(data[1]);
+try {
+    cart8.addProduct(data[0]);
+    cart8.addProduct(data[1]);
+} catch (err) {
+    console.log(err);
+}
 console.log('Товары в корзине', cart8.products)
-console.log('Ожидаемая общая стоимость', (data[0].price || 0) + (data[1].price || 0));
+console.log('Ожидаемая общая стоимость', (data[0]?.price || 0) + (data[1]?.price || 0));
 console.log('Фактическая общая стоимость', cart8.getTotalPrice());
 console.groupEnd();
 
 console.group('Получение количества позиций');
 const cart9 = new ShoppingCart();
-cart9.addProduct(data[0]);
-cart9.addProduct(data[1]);
+try {
+    cart9.addProduct(data[0]);
+    cart9.addProduct(data[1]);
+} catch (err) {
+    console.log(err);
+}
 console.log('Товары в корзине', cart9.products)
 console.log('Ожидаемое количество', 2);
 console.log('Фактическое количество', cart8.getTotalCount());
@@ -130,11 +176,15 @@ console.groupEnd();
 
 console.group('Проверка наличия товара в корзине');
 const cart10 = new ShoppingCart();
-cart10.addProduct(data[0]);
-cart10.addProduct(data[1]);
+try {
+    cart10.addProduct(data[0]);
+    cart10.addProduct(data[1]);
+} catch (err) {
+    console.log(err);
+}
 console.log('Товары в корзине', cart10.products)
-console.log(`Корзина содержит товар ${data[0].id}`, cart10.contains(data[0].id));
-console.log(`Корзина содержит товар ${data[2].id}`, cart10.contains(data[2].id));
+console.log(`Корзина содержит товар ${data[0]?.id}`, cart10.contains(data[0]?.id));
+console.log(`Корзина содержит товар ${data[2]?.id}`, cart10.contains(data[2]?.id));
 console.groupEnd();
 
 console.group('ПОКУПАТЕЛЬ')
@@ -158,7 +208,7 @@ console.log('Валидация покупателя', customer.validate())
 console.groupEnd();
 
 
-const order = {
+const order:IOrder = {
     "payment": "online",
     "email": "test@test.ru",
     "phone": "+71234567890",
@@ -170,7 +220,7 @@ const order = {
     ]
 }
 
-const orderWrongTotal = {
+const orderWrongTotal:IOrder = {
     "payment": "online",
     "email": "test@test.ru",
     "phone": "+71234567890",
@@ -183,7 +233,7 @@ const orderWrongTotal = {
     ]
 }
 
-const orderWrongProduct = {
+const orderWrongProduct:IOrder = {
     "payment": "online",
     "email": "test@test.ru",
     "phone": "+71234567890",
@@ -196,7 +246,7 @@ const orderWrongProduct = {
     ]
 }
 
-const orderWrongAddress = {
+const orderWrongAddress:IOrder = {
     "payment": "online",
     "email": "test@test.ru",
     "phone": "+71234567890",
@@ -210,12 +260,30 @@ const orderWrongAddress = {
 }
 
 console.log(data);
-const createdOrder = await client.createOrder(order);
-console.log(createdOrder)
+try {
+    const createdOrder = await client.createOrder(order);
+    console.log(createdOrder);
+} catch (err) {
+    console.log(err);
+}
 
-await client.createOrder(orderWrongTotal);
-await client.createOrder(orderWrongProduct);
-await client.createOrder(orderWrongAddress);
+try {
+    await client.createOrder(orderWrongTotal);
+} catch (err) {
+    console.log(err);
+}
+
+try {
+    await client.createOrder(orderWrongProduct);
+} catch (err) {
+    console.log(err);
+}
+
+try {
+    await client.createOrder(orderWrongAddress);
+} catch (err) {
+    console.log(err);
+}
 
 
 

@@ -1,4 +1,4 @@
-import {IApi, IOrder, IOrderResponse, IProduct} from "../types";
+import {IApi, IOrder, IOrderResponse, IProductsResponse} from "../types";
 import {API_ENDPOINTS} from "../utils/constants.ts";
 
 export class ApiClient {
@@ -9,19 +9,11 @@ export class ApiClient {
         this.api = api
     }
 
-    async getProducts():Promise<IProduct[]> {
-        try {
-            return await this.api.get(API_ENDPOINTS.PRODUCTS)
-        } catch (err) {
-            console.log(err);
-        }
+    async getProducts():Promise<IProductsResponse> {
+        return await this.api.get<IProductsResponse>(API_ENDPOINTS.PRODUCTS)
     }
 
     async createOrder(order: IOrder): Promise<IOrderResponse> {
-        try {
-            return await this.api.post(API_ENDPOINTS.ORDER, order)
-        } catch (err) {
-            console.log(err);
-        }
+        return await this.api.post<IOrderResponse>(API_ENDPOINTS.ORDER, order);
     }
 }

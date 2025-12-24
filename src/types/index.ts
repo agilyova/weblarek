@@ -1,5 +1,6 @@
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 export type TPayment = 'online' | 'offline' | undefined; //(способ оплаты может принимать значения “card” или “cash”);
+export type TValidationErrors = { [key: string]: string }
 
 export interface IApi {
     get<T extends object>(uri: string): Promise<T>;
@@ -13,6 +14,11 @@ export interface IProduct {
     title: string;
     category: string;
     price: number | null;
+}
+
+export interface IProductsResponse {
+    total: number,
+    items: IProduct[]
 }
 
 export interface ICustomer {

@@ -1,4 +1,4 @@
-import {ICustomer, TPayment} from "../../types";
+import {ICustomer, TPayment, TValidationErrors} from "../../types";
 import {validationMessages} from '../../utils/constants';
 
 export class Customer {
@@ -44,8 +44,8 @@ export class Customer {
         this.customer.email = '';
     }
 
-    validate(): { [key: string]: string } {
-        const errors: { [key: string]: string } = {};
+    validate(): TValidationErrors {
+        const errors: TValidationErrors = {};
         for (const key in this.customer) {
             if (!this.customer[key as keyof ICustomer]) {
                 errors[key] = validationMessages[key];
